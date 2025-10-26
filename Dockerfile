@@ -1,5 +1,5 @@
-# Render ko yeh batana ki hum Java Buildpack use karna chahte hain
-# Yeh line Render ko automatically Maven buildpack par redirect kar degi
-# Render is line ko padhega aur Docker mode se bahar nikal jayega.
+# Ye standard aur reliable OpenJDK image hai
+FROM openjdk:17-jdk-slim
 
-FROM render/buildpack-deps:java
+# Render is image ko use karke container banayega, aur fir:
+# Docker Command (settings mein) ko chalaayega.
