@@ -8,8 +8,7 @@ import org.springframework.web.client.RestTemplate;
 @Service // Spring ko batata hai ki yeh class business logic handle karegi
 public class MapService {
 
-    // 🔥 Key ko application.properties se load karna
-    @Value("${google.maps.api.directions-key}")
+    @Value("${GOOGLE_MAPS_API_DIRECTIONS_KEY}")
     private String directionsApiKey;
 
     private final String GOOGLE_DIRECTIONS_URL = "https://maps.googleapis.com/maps/api/directions/json";
