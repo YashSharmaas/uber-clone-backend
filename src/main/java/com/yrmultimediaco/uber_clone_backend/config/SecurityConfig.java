@@ -2,10 +2,10 @@ package com.yrmultimediaco.uber_clone_backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -14,23 +14,29 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Cross-Site Request Forgery (CSRF) protection ko disable karna (APIs ke liye zaroori)
+                // WebSocket aur APIs ke liye CSRF disable karna compulsory hai
                 .csrf(csrf -> csrf.disable())
 
-                // Authorization rules define karna (Modern Spring Security syntax)
-                .authorizeHttpRequests(authorize -> authorize
-                        // 🔥 1. Health check ko allow karna (GET request)
-                        .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        // 1. WebSocket Handshake ko allow karein
+                        .requestMatchers("/ws-uber/**").permitAll()
 
-                        // 🔥 2. Ride route request ko allow karna (POST request)
+                        // 2. Directions API ko allow karein
                         .requestMatchers(HttpMethod.POST, "/api/rides/route").permitAll()
 
-                        // Baaki saare endpoints ke liye authentication (sign-in) zaroori hai
-                        .anyRequest().authenticated()
+                        // 3. Driver Location aur Ride Requests ko allow karein
+                        .requestMatchers("/api/rides/update-location").permitAll()
+                        .requestMatchers("/api/rides/request").permitAll()
+                        .requestMatchers("/api/rides/accept").permitAll()
+
+                        // 4. Health check
+                        .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
+
+                        // Abhi ke liye baaki sab bhi allow karte hain taaki testing mein rukawat na aaye
+                        .anyRequest().permitAll()
                 )
-                // Default login forms aur basic popups ko disable karte hain
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .formLogin(formLogin -> formLogin.disable());
+                .httpBasic(hb -> hb.disable())
+                .formLogin(fl -> fl.disable());
 
         return http.build();
     }
